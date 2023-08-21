@@ -6,12 +6,12 @@
     FlutterMethodChannel *_channel;
 }
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  FlutterMethodChannel* channel = [FlutterMethodChannel
-      methodChannelWithName:@"plain_notification_token"
-            binaryMessenger:[registrar messenger]];
-  PlainNotificationTokenPlugin* instance = [[PlainNotificationTokenPlugin alloc] initWithChannel:channel];
-  [registrar addApplicationDelegate:instance];
-  [registrar addMethodCallDelegate:instance channel:channel];
+    FlutterMethodChannel* channel = [FlutterMethodChannel
+                                     methodChannelWithName:@"plain_notification_token"
+                                     binaryMessenger:[registrar messenger]];
+    PlainNotificationTokenPlugin* instance = [[PlainNotificationTokenPlugin alloc] initWithChannel:channel];
+    [registrar addApplicationDelegate:instance];
+    [registrar addMethodCallDelegate:instance channel:channel];
 }
 
 - (instancetype)initWithChannel:(FlutterMethodChannel *)channel {
@@ -25,10 +25,10 @@
         if (@available(iOS 10.0, *)) {
             [[UNUserNotificationCenter currentNotificationCenter] getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings * _Nonnull settings) {
                 NSDictionary *settingsDictionary = @{
-                                                     @"sound" : [NSNumber numberWithBool:settings.soundSetting == UNNotificationSettingEnabled],
-                                                     @"badge" : [NSNumber numberWithBool:settings.badgeSetting == UNNotificationSettingEnabled],
-                                                     @"alert" : [NSNumber numberWithBool:settings.alertSetting == UNNotificationSettingEnabled],
-                                                     };
+                    @"sound" : [NSNumber numberWithBool:settings.soundSetting == UNNotificationSettingEnabled],
+                    @"badge" : [NSNumber numberWithBool:settings.badgeSetting == UNNotificationSettingEnabled],
+                    @"alert" : [NSNumber numberWithBool:settings.alertSetting == UNNotificationSettingEnabled],
+                };
                 [self->_channel invokeMethod:@"onIosSettingsRegistered" arguments:settingsDictionary];
             }];
         }
@@ -37,14 +37,14 @@
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
-  if ([@"getToken" isEqualToString:call.method]) {
-    result([self getToken]);
-  } else if ([@"requestPermission" isEqualToString:call.method]) {
-      [self requestPermissionWithSettings:[call arguments]];
-      result(nil);
-  } else {
-    result(FlutterMethodNotImplemented);
-  }
+    if ([@"getToken" isEqualToString:call.method]) {
+        result([self getToken]);
+    } else if ([@"requestPermission" isEqualToString:call.method]) {
+        [self requestPermissionWithSettings:[call arguments]];
+        result(nil);
+    } else {
+        result(FlutterMethodNotImplemented);
+    }
 }
 
 - (NSString *)getToken {
@@ -78,8 +78,7 @@
                 [self->_channel invokeMethod:@"onIosSettingsRegistered" arguments:empty];
             }
         }];
-    }
-    else {
+    } else {
         UIUserNotificationType types = 0;
         if ([[settings objectForKey:@"sound"] boolValue]) {
             types |= UIUserNotificationTypeSound;
@@ -99,10 +98,10 @@
 
 - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
     NSDictionary *settingsDictionary = @{
-                                         @"sound" : [NSNumber numberWithBool:notificationSettings.types & UIUserNotificationTypeSound],
-                                         @"badge" : [NSNumber numberWithBool:notificationSettings.types & UIUserNotificationTypeBadge],
-                                         @"alert" : [NSNumber numberWithBool:notificationSettings.types & UIUserNotificationTypeAlert],
-                                         };
+        @"sound" : [NSNumber numberWithBool:notificationSettings.types & UIUserNotificationTypeSound],
+        @"badge" : [NSNumber numberWithBool:notificationSettings.types & UIUserNotificationTypeBadge],
+        @"alert" : [NSNumber numberWithBool:notificationSettings.types & UIUserNotificationTypeAlert],
+    };
     [_channel invokeMethod:@"onIosSettingsRegistered" arguments:settingsDictionary];
 }
 
